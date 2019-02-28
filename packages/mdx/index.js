@@ -97,19 +97,19 @@ function applyHastPluginsAndCompilers(compiler, options) {
 }
 
 function createCompiler(options) {
-  const compiler = createMdxAstCompiler(options)
-  const compilerWithPlugins = applyHastPluginsAndCompilers(compiler, options)
+  const opts = Object.assign({}, DEFAULT_OPTIONS, options)
+  const compiler = createMdxAstCompiler(opts)
+  const compilerWithPlugins = applyHastPluginsAndCompilers(compiler, opts)
 
   return compilerWithPlugins
 }
 
-function sync(mdx, options) {
-  const opts = Object.assign({}, DEFAULT_OPTIONS, options)
-  const compiler = createCompiler(opts)
+function sync(mdx, options = {}) {
+  const compiler = createCompiler(options)
 
   const fileOpts = {contents: mdx}
-  if (opts.filepath) {
-    fileOpts.path = opts.filepath
+  if (options.filepath) {
+    fileOpts.path = options.filepath
   }
 
   const {contents} = compiler.processSync(fileOpts)
@@ -118,12 +118,11 @@ function sync(mdx, options) {
 }
 
 async function compile(mdx, options = {}) {
-  const opts = Object.assign({}, DEFAULT_OPTIONS, options)
-  const compiler = createCompiler(opts)
+  const compiler = createCompiler(options)
 
   const fileOpts = {contents: mdx}
-  if (opts.filepath) {
-    fileOpts.path = opts.filepath
+  if (options.filepath) {
+    fileOpts.path = options.filepath
   }
 
   const {contents} = await compiler.process(fileOpts)
@@ -132,6 +131,7 @@ async function compile(mdx, options = {}) {
 }
 
 compile.sync = sync
+compile.createCompiler = createCompiler
 
 module.exports = compile
 exports = compile

@@ -386,6 +386,13 @@ test('Should expose a sync compiler', () => {
   expect(result).toMatch(/Hello, world!/)
 })
 
+test('Should expose createCompiler', () => {
+  const compiler = mdx.createCompiler()
+  const result = compiler.processSync(fixtureBlogPost)
+
+  expect(result.contents).toMatch(/Hello, world!/)
+})
+
 test('Should handle layout props', () => {
   const result = mdx.sync(fixtureBlogPost)
 
