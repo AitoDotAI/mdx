@@ -1,5 +1,5 @@
 {
-  "name": "@mdx-js/mdx",
+  "name": "@aitodotai/mdx-js-mdx",
   "version": "0.18.2",
   "description": "Parse MDX and transpile to JSX",
   "license": "MIT",

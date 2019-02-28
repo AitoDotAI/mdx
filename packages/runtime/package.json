@@ -1,5 +1,5 @@
 {
-  "name": "@mdx-js/runtime",
+  "name": "@aitodotai/mdx-js-runtime",
   "version": "0.18.2",
   "description": "Parse and render MDX in a runtime environment",
   "license": "MIT",
