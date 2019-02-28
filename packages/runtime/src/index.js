@@ -1,6 +1,6 @@
 import React from 'react'
 import {transform} from 'buble'
-import mdx from '@mdx-js/mdx'
+import mdx from '@aitodotai/mdx-js-mdx'
 import {MDXTag} from '@mdx-js/tag'
 
 export default ({
