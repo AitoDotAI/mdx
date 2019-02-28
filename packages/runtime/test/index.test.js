@@ -1,5 +1,6 @@
 import React from 'react'
 import {renderToString as render} from 'react-dom/server'
+import remark from 'remark'
 import slug from 'remark-slug'
 import autolinkHeadings from 'remark-autolink-headings'
 import addClasses from 'rehype-add-classes'
@@ -20,6 +21,8 @@ const mdx = `
 <Foo />
 `
 
+const mdxAst = remark().parse(mdx)
+
 const mdxLayout = `
 # Hello, world
 
@@ -27,6 +30,8 @@ const mdxLayout = `
 
 export default ({ children, id }) => <div id={id}>{children}</div>
 `
+
+const mdxLayoutAst = remark().parse(mdxLayout)
 
 describe('renders MDX with the proper components', () => {
   it('default layout', () => {
@@ -51,6 +56,25 @@ describe('renders MDX with the proper components', () => {
     expect(result).toMatch(/style="color:tomato"/)
     expect(result).toMatch(/Foobarbaz/)
     expect(result).toMatch(/id="layout"/)
+  })
+
+  it('custom layout as mdast', () => {
+    const result = render(
+      <MDX components={components} scope={scope} mdast={mdxLayoutAst} />
+    )
+
+    expect(result).toMatch(/style="color:tomato"/)
+    expect(result).toMatch(/Foobarbaz/)
+    expect(result).toMatch(/id="layout"/)
+  })
+
+  it('default layout as mdast', () => {
+    const result = render(
+      <MDX components={components} scope={scope} mdast={mdxAst} />
+    )
+
+    expect(result).toMatch(/style="color:tomato"/)
+    expect(result).toMatch(/Foobarbaz/)
   })
 })
 

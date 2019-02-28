@@ -8,6 +8,7 @@ export default ({
   components = {},
   mdPlugins = [],
   hastPlugins = [],
+  mdast,
   children,
   ...props
 }) => {
@@ -18,15 +19,21 @@ export default ({
     ...scope
   }
 
-  const jsx = mdx
-    .sync(children, {
-      mdPlugins,
-      hastPlugins,
-      skipExport: true
-    })
-    .trim()
+  const compiler = mdx.createCompiler({
+    mdPlugins,
+    hastPlugins,
+    skipExport: true
+  })
 
-  const {code} = transform(jsx)
+  let jsx
+  if (mdast) {
+    const tree = compiler().runSync(mdast)
+    jsx = compiler.stringify(tree)
+  } else {
+    jsx = compiler.processSync({contents: children}).contents
+  }
+
+  const {code} = transform(jsx.trim())
 
   const keys = Object.keys(fullScope)
   const values = Object.values(fullScope)
