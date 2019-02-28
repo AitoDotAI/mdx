@@ -1,5 +1,6 @@
 import React from 'react'
 import {renderToString as render} from 'react-dom/server'
+import mdxLib from '@mdx-js/mdx'
 import remark from 'remark'
 import slug from 'remark-slug'
 import autolinkHeadings from 'remark-autolink-headings'
@@ -21,7 +22,9 @@ const mdx = `
 <Foo />
 `
 
-const mdxAst = remark().parse(mdx)
+const defaultLayoutMdxast = remark()
+  .use(mdxLib.esSyntax)
+  .parse(mdx)
 
 const mdxLayout = `
 # Hello, world
@@ -31,12 +34,23 @@ const mdxLayout = `
 export default ({ children, id }) => <div id={id}>{children}</div>
 `
 
-const mdxLayoutAst = remark().parse(mdxLayout)
+const customLayoutMdxast = remark()
+  .use(mdxLib.esSyntax)
+  .parse(mdxLayout)
 
 describe('renders MDX with the proper components', () => {
   it('default layout', () => {
     const result = render(
       <MDX components={components} scope={scope} children={mdx} />
+    )
+
+    expect(result).toMatch(/style="color:tomato"/)
+    expect(result).toMatch(/Foobarbaz/)
+  })
+
+  it('default layout as mdxast', () => {
+    const result = render(
+      <MDX components={components} scope={scope} mdxast={defaultLayoutMdxast} />
     )
 
     expect(result).toMatch(/style="color:tomato"/)
@@ -58,23 +72,19 @@ describe('renders MDX with the proper components', () => {
     expect(result).toMatch(/id="layout"/)
   })
 
-  it('custom layout as mdast', () => {
+  it('custom layout as mdxast', () => {
     const result = render(
-      <MDX components={components} scope={scope} mdast={mdxLayoutAst} />
+      <MDX
+        components={components}
+        scope={scope}
+        mdxast={customLayoutMdxast}
+        id="layout"
+      />
     )
 
     expect(result).toMatch(/style="color:tomato"/)
     expect(result).toMatch(/Foobarbaz/)
     expect(result).toMatch(/id="layout"/)
-  })
-
-  it('default layout as mdast', () => {
-    const result = render(
-      <MDX components={components} scope={scope} mdast={mdxAst} />
-    )
-
-    expect(result).toMatch(/style="color:tomato"/)
-    expect(result).toMatch(/Foobarbaz/)
   })
 })
 

@@ -8,7 +8,7 @@ export default ({
   components = {},
   mdPlugins = [],
   hastPlugins = [],
-  mdast,
+  mdxast,
   children,
   ...props
 }) => {
@@ -22,12 +22,13 @@ export default ({
   const compiler = mdx.createCompiler({
     mdPlugins,
     hastPlugins,
-    skipExport: true
+    skipExport: true,
+    inputType: mdxast ? 'mdxast' : 'markdown'
   })
 
   let jsx
-  if (mdast) {
-    const tree = compiler().runSync(mdast)
+  if (mdxast) {
+    const tree = compiler().runSync(mdxast)
     jsx = compiler.stringify(tree)
   } else {
     jsx = compiler.processSync({contents: children}).contents
