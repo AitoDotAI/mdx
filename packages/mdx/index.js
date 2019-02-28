@@ -18,7 +18,8 @@ const DEFAULT_OPTIONS = {
   mdPlugins: [],
   hastPlugins: [],
   compilers: [],
-  blocks: [BLOCKS_REGEX]
+  blocks: [BLOCKS_REGEX],
+  inputType: 'markdown'
 }
 
 const tokenizeEsSyntax = (eat, value) => {
@@ -56,9 +57,12 @@ function createMdxAstCompiler(options) {
   const mdPlugins = options.mdPlugins
 
   const fn = unified()
-    .use(toMDAST, options)
-    .use(esSyntax)
-    .use(squeeze, options)
+  if (options.inputType === 'markdown') {
+    // Parse to MDAST and tokenize only if the input is raw markdown
+    fn.use(toMDAST, options).use(esSyntax)
+  }
+
+  fn.use(squeeze, options)
 
   mdPlugins.forEach(plugin => {
     // Handle [plugin, pluginOptions] syntax
@@ -132,6 +136,7 @@ async function compile(mdx, options = {}) {
 
 compile.sync = sync
 compile.createCompiler = createCompiler
+compile.esSyntax = esSyntax
 
 module.exports = compile
 exports = compile
